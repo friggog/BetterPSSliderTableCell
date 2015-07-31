@@ -1,3 +1,7 @@
+#import "BetterPSSliderTableCell.h"
+
+static BOOL wantsNegation = YES; // THIS WILL ALLOW THE USER TO ENTER NEGATIVE VALUES (ON IPHONE - IPAD ALWAYS CAN)
+
 @implementation BetterPSSliderTableCell
 
 - (id)initWithStyle:(int)arg1 reuseIdentifier:(id)arg2 specifier:(id)arg3 {
@@ -15,10 +19,8 @@
 }
 
 - (void)presentPopup {
-    maximumValue = [[self.specifier propertyForKey:@"max"] floatValue];
-    minimumValue = [[self.specifier propertyForKey:@"min"] floatValue];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:self.specifier.name;
-                          message:[NSString stringWithFormat:@"Please enter a value between %i and %i.", (int)minimumValue, (int)maximumValue]
+    alert = [[UIAlertView alloc] initWithTitle:self.specifier.name
+                          message:[NSString stringWithFormat:@"Please enter a value between %i and %i.", (int)[[self.specifier propertyForKey:@"min"] floatValue], (int)[[self.specifier propertyForKey:@"max"] floatValue]]
                           delegate:self
                           cancelButtonTitle:@"Cancel"
                           otherButtonTitles:@"Enter"
@@ -29,26 +31,45 @@
     [[alert textFieldAtIndex:0] setDelegate:self];
     [[alert textFieldAtIndex:0] resignFirstResponder];
     [[alert textFieldAtIndex:0] setKeyboardType:UIKeyboardTypeNumberPad];
+    if(wantsNegation && UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        UIToolbar* toolBar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 44)];
+        UIBarButtonItem* buttonOne = [[UIBarButtonItem alloc] initWithTitle:@"Negate" style:UIBarButtonItemStylePlain target:self action:@selector(typeMinus)];
+        NSArray* buttons = [NSArray arrayWithObjects:buttonOne, nil];
+        [toolBar setItems:buttons animated:NO];
+        [[alert textFieldAtIndex:0] setInputAccessoryView:toolBar];
+    }
     [[alert textFieldAtIndex:0] becomeFirstResponder];
+}
+
+-(void) typeMinus {
+    if (alert) {
+        NSString* text = [alert textFieldAtIndex:0].text;
+        if ([text hasPrefix:@"-"]) {
+            [alert textFieldAtIndex:0].text = [text substringFromIndex:1];
+        }
+        else {
+            [alert textFieldAtIndex:0].text = [NSString stringWithFormat:@"-%@", text];
+        }
+    }
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 342879 && buttonIndex == 1) {
         CGFloat value = [[alertView textFieldAtIndex:0].text floatValue];
-        if (value <= maximumValue && value >= minimumValue) {
+        if (value <= [[self.specifier propertyForKey:@"max"] floatValue] && value >= [[self.specifier propertyForKey:@"min"] floatValue]) {
             [PSRootController setPreferenceValue:[NSNumber numberWithInt:value] specifier:self.specifier];
             [[NSUserDefaults standardUserDefaults] synchronize];
             [self setValue:[NSNumber numberWithInt:value]];
         }
         else {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+            UIAlertView * errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
                                   message:@"Ensure you enter a valid value."
                                   delegate:self
                                   cancelButtonTitle:@"OK"
                                   otherButtonTitles:nil
                                   , nil];
-            alert.tag = 85230234;
-            [alert show];
+            errorAlert.tag = 85230234;
+            [errorAlert show];
         }
     }
     else if (alertView.tag == 85230234) {
