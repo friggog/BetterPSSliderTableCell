@@ -1,6 +1,6 @@
 #import "BetterPSSliderTableCell.h"
 
-static BOOL wantsNegation = YES; // THIS WILL ALLOW THE USER TO ENTER NEGATIVE VALUES (ON IPHONE - IPAD ALWAYS CAN)
+#define WANTS_NEGATION YES // THIS WILL ALLOW THE USER TO ENTER NEGATIVE VALUES (ON IPHONE - IPAD ALWAYS CAN)
 
 @implementation BetterPSSliderTableCell
 
@@ -31,7 +31,7 @@ static BOOL wantsNegation = YES; // THIS WILL ALLOW THE USER TO ENTER NEGATIVE V
     [[alert textFieldAtIndex:0] setDelegate:self];
     [[alert textFieldAtIndex:0] resignFirstResponder];
     [[alert textFieldAtIndex:0] setKeyboardType:UIKeyboardTypeNumberPad];
-    if(wantsNegation && UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+    if(WANTS_NEGATION && UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
         UIToolbar* toolBar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 44)];
         UIBarButtonItem* buttonOne = [[UIBarButtonItem alloc] initWithTitle:@"Negate" style:UIBarButtonItemStylePlain target:self action:@selector(typeMinus)];
         NSArray* buttons = [NSArray arrayWithObjects:buttonOne, nil];
