@@ -1,6 +1,5 @@
 #import "BetterPSSliderTableCell.h"
 
-#define WANTS_NEGATION YES // THIS WILL ALLOW THE USER TO ENTER NEGATIVE VALUES (ON IPHONE - IPAD ALWAYS CAN)
 
 @implementation BetterPSSliderTableCell
 
@@ -31,10 +30,22 @@
     [[alert textFieldAtIndex:0] setDelegate:self];
     [[alert textFieldAtIndex:0] resignFirstResponder];
     [[alert textFieldAtIndex:0] setKeyboardType:UIKeyboardTypeNumberPad];
-    if(WANTS_NEGATION && UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+    BOOL needsNegate = [[self.specifier propertyForKey:@"min"] floatValue]<0;
+    BOOL needsPoint = [[self.specifier propertyForKey:@"max"] floatValue] - [[self.specifier propertyForKey:@"min"] floatValue] <= 10;
+    if( UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad && (needsNegate || needsPoint)) {
         UIToolbar* toolBar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 44)];
         UIBarButtonItem* buttonOne = [[UIBarButtonItem alloc] initWithTitle:@"Negate" style:UIBarButtonItemStylePlain target:self action:@selector(typeMinus)];
-        NSArray* buttons = [NSArray arrayWithObjects:buttonOne, nil];
+        UIBarButtonItem* buttonTwo = [[UIBarButtonItem alloc] initWithTitle:@"Point" style:UIBarButtonItemStylePlain target:self action:@selector(typePoint)];
+        NSArray* buttons = nil;
+        if(needsPoint && needsNegate) {
+            buttons = [NSArray arrayWithObjects:buttonOne, buttonTwo, nil];
+        }
+        else if (needsPoint) {
+            buttons = [NSArray arrayWithObjects: buttonTwo, nil];
+        }
+        else if (needsNegate) {
+            buttons = [NSArray arrayWithObjects: buttonOne, nil];
+        }
         [toolBar setItems:buttons animated:NO];
         [[alert textFieldAtIndex:0] setInputAccessoryView:toolBar];
     }
@@ -50,6 +61,13 @@
         else {
             [alert textFieldAtIndex:0].text = [NSString stringWithFormat:@"-%@", text];
         }
+    }
+}
+
+-(void) typePoint {
+    if (alert) {
+        NSString* text = [alert textFieldAtIndex:0].text;
+        [alert textFieldAtIndex:0].text = [NSString stringWithFormat:@"%@.", text];
     }
 }
 

@@ -4,6 +4,7 @@
 @interface BetterPSSliderTableCell : PSSliderTableCell <UIAlertViewDelegate, UITextFieldDelegate> {
     UIAlertView * alert;
 }
--(void)presentPopup;
+-(void) presentPopup;
 -(void) typeMinus;
+-(void) typePoint;
 @end
