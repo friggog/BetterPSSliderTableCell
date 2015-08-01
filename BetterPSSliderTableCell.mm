@@ -1,3 +1,5 @@
+
+
 #import "BetterPSSliderTableCell.h"
 
 
@@ -74,6 +76,7 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 342879 && buttonIndex == 1) {
         CGFloat value = [[alertView textFieldAtIndex:0].text floatValue];
+        [[alertView textFieldAtIndex:0] resignFirstResponder];
         if (value <= [[self.specifier propertyForKey:@"max"] floatValue] && value >= [[self.specifier propertyForKey:@"min"] floatValue]) {
             [PSRootController setPreferenceValue:[NSNumber numberWithInt:value] specifier:self.specifier];
             [[NSUserDefaults standardUserDefaults] synchronize];
