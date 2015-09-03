@@ -5,7 +5,7 @@
 
 @implementation BetterPSSliderTableCell
 
-- (id)initWithStyle:(int)arg1 reuseIdentifier:(id)arg2 specifier:(id)arg3 {
+- (id)initWithStyle:(NSInteger)arg1 reuseIdentifier:(id)arg2 specifier:(id)arg3 {
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:arg2 specifier:arg3];
     if (self) {
         CGRect frame = [self frame];
@@ -74,24 +74,26 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 342879 && buttonIndex == 1) {
-        CGFloat value = [[alertView textFieldAtIndex:0].text floatValue];
+    if (alertView.tag == 342879) {
+        if(buttonIndex == 1) {
+            CGFloat value = [[alertView textFieldAtIndex:0].text floatValue];
+            if (value <= [[self.specifier propertyForKey:@"max"] floatValue] && value >= [[self.specifier propertyForKey:@"min"] floatValue]) {
+                [PSRootController setPreferenceValue:[NSNumber numberWithFloat:value] specifier:self.specifier];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                [self setValue:[NSNumber numberWithInt:value]];
+            }
+            else {
+                UIAlertView * errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                                      message:@"Ensure you enter a valid value."
+                                                                     delegate:self
+                                                            cancelButtonTitle:@"OK"
+                                                            otherButtonTitles:nil
+                                            , nil];
+                errorAlert.tag = 85230234;
+                [errorAlert show];
+            }
+        }
         [[alertView textFieldAtIndex:0] resignFirstResponder];
-        if (value <= [[self.specifier propertyForKey:@"max"] floatValue] && value >= [[self.specifier propertyForKey:@"min"] floatValue]) {
-            [PSRootController setPreferenceValue:[NSNumber numberWithInt:value] specifier:self.specifier];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            [self setValue:[NSNumber numberWithInt:value]];
-        }
-        else {
-            UIAlertView * errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                  message:@"Ensure you enter a valid value."
-                                  delegate:self
-                                  cancelButtonTitle:@"OK"
-                                  otherButtonTitles:nil
-                                  , nil];
-            errorAlert.tag = 85230234;
-            [errorAlert show];
-        }
     }
     else if (alertView.tag == 85230234) {
         [self presentPopup];
