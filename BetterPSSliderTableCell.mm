@@ -21,7 +21,7 @@
 
 - (void)presentPopup {
     alert = [[UIAlertView alloc] initWithTitle:self.specifier.name
-                          message:[NSString stringWithFormat:@"Please enter a value between %i and %i.", (int)[[self.specifier propertyForKey:@"min"] floatValue], (int)[[self.specifier propertyForKey:@"max"] floatValue]]
+                          message:[NSString stringWithFormat:@"Please enter a value between %1f and %1f.", [[self.specifier propertyForKey:@"min"] floatValue], [[self.specifier propertyForKey:@"max"] floatValue]]
                           delegate:self
                           cancelButtonTitle:@"Cancel"
                           otherButtonTitles:@"Enter"
@@ -78,9 +78,13 @@
         if(buttonIndex == 1) {
             CGFloat value = [[alertView textFieldAtIndex:0].text floatValue];
             if (value <= [[self.specifier propertyForKey:@"max"] floatValue] && value >= [[self.specifier propertyForKey:@"min"] floatValue]) {
+                [self setValue:[NSNumber numberWithInt:value]];
                 [PSRootController setPreferenceValue:[NSNumber numberWithFloat:value] specifier:self.specifier];
                 [[NSUserDefaults standardUserDefaults] synchronize];
-                [self setValue:[NSNumber numberWithInt:value]];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    // notify after file write
+                    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), (__bridge CFStringRef)[self.specifier propertyForKey:@"PostNotification"], NULL, NULL, YES);
+                });
             }
             else {
                 UIAlertView * errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
