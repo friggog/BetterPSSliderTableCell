@@ -21,7 +21,7 @@
 
 - (void)presentPopup {
     alert = [[UIAlertView alloc] initWithTitle:self.specifier.name
-                          message:[NSString stringWithFormat:@"Please enter a value between %1f and %1f.", [[self.specifier propertyForKey:@"min"] floatValue], [[self.specifier propertyForKey:@"max"] floatValue]]
+                          message:[NSString stringWithFormat:@"Please enter a value between %.01f and %.01f.", [[self.specifier propertyForKey:@"min"] floatValue], [[self.specifier propertyForKey:@"max"] floatValue]]
                           delegate:self
                           cancelButtonTitle:@"Cancel"
                           otherButtonTitles:@"Enter"
