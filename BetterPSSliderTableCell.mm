@@ -78,7 +78,7 @@
         if(buttonIndex == 1) {
             CGFloat value = [[alertView textFieldAtIndex:0].text floatValue];
             if (value <= [[self.specifier propertyForKey:@"max"] floatValue] && value >= [[self.specifier propertyForKey:@"min"] floatValue]) {
-                [self setValue:[NSNumber numberWithInt:value]];
+                [self setValue:[NSNumber numberWithFloat:value]];
                 [PSRootController setPreferenceValue:[NSNumber numberWithFloat:value] specifier:self.specifier];
                 [[NSUserDefaults standardUserDefaults] synchronize];
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
